@@ -3,10 +3,10 @@ import sqlite3
 from flask_cors import CORS, cross_origin
 
 
-app = Flask(__name__)
-# app = Flask(__name__, 
-#             template_folder='./',
-#             static_folder='./')
+# app = Flask(__name__)
+app = Flask(__name__, 
+            template_folder='./dist/',
+            static_folder='./dist/assets/')
 
 CORS(app)
 
@@ -17,11 +17,15 @@ CORS(app)
 def create_database():
     conn = sqlite3.connect('mydatabase.db')
     cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE users
-                      (id INTEGER PRIMARY KEY, name TEXT, email TEXT)''')
-    conn.commit()
-    conn.close()
-    return 'Database Created'
+    try:
+        cursor.execute('''CREATE TABLE users
+                          (id INTEGER PRIMARY KEY, name TEXT, email TEXT)''')
+        conn.commit()
+        conn.close()
+    except sqlite3.OperationalError:
+        conn.close()
+        return 'Database already exists!'
+    return 'Database created!'
 
 
 
